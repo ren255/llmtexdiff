@@ -100,9 +100,11 @@ class Answer(Base):
     )
 
     # --- LaTeX テキスト本体（短いのでDB直保存） ---
-    tex_transcribed: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    tex_correct: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    diff_latex: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    tex_transcribed: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # OCR
+    tex_correct: Mapped[Optional[str]] = mapped_column(Text, nullable=True)  # 答え
+    diff_latex: Mapped[Optional[str]] = mapped_column(
+        Text, nullable=True
+    )  # 直接LLMで差分込み
 
     # --- 生成ファイルの相対パス（data/ 起点） ---
     pdf_transcribed_path: Mapped[Optional[str]] = mapped_column(
