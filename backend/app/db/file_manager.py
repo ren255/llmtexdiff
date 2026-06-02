@@ -71,3 +71,33 @@ def exists(relative: str | Path) -> bool:
 def abs_path(relative: str | Path) -> Path:
     """Return the absolute Path for a DATA_ROOT-relative path."""
     return _abs(relative)
+
+
+class FileManager:
+    """
+    PDF ファイルの保存・パス管理を担うクラス。
+    pipeline.py から使用される。
+    """
+
+    def save_pdf(self, *, session_id: str, filename: str, data: bytes) -> str:
+        """
+        PDF バイト列を data/sessions/{session_id}/{filename} に保存し、
+        data/ 起点の相対パスを返す。
+        """
+        relative = f"sessions/{session_id}/{filename}"
+        save(relative, data)
+        return relative
+
+    def load_pdf(self, *, session_id: str, filename: str) -> bytes:
+        """
+        data/sessions/{session_id}/{filename} から PDF を読み込む。
+        """
+        relative = f"sessions/{session_id}/{filename}"
+        return load(relative)
+
+    def delete_pdf(self, *, session_id: str, filename: str) -> None:
+        """
+        data/sessions/{session_id}/{filename} を削除する。
+        """
+        relative = f"sessions/{session_id}/{filename}"
+        delete(relative)

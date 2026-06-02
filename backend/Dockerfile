@@ -1,9 +1,7 @@
 FROM python:3.12-slim
 WORKDIR /app
 
-# latexdiff は texlive に同梱
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    texlive-extra-utils \
     texlive-latex-base \
     texlive-latex-recommended \
     texlive-fonts-recommended \
