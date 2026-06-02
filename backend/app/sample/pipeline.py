@@ -21,7 +21,7 @@ import argparse
 from pathlib import Path
 
 from app.db.database import SessionLocal
-from app.db.file_manager import FileManager
+from app.db.file_manager import FileManager, save
 from app.db.init_db import init_db
 from app.db.model import Answer, Question, Session
 from app.services.pipeline import run_pipeline
@@ -60,11 +60,13 @@ def main() -> None:
         db.add(session)
         db.flush()
 
-        # 画像パスは data/ 起点の相対パスで保存（実際にはアップロード処理で配置済みと仮定）
+        # 画像を data/ 配下にコピー
         image_paths_rel = [
             f"sessions/{session.id}/images/{i}{img.suffix}"
             for i, img in enumerate(args.images)
         ]
+        for rel, img_path in zip(image_paths_rel, args.images):
+            save(rel, img_path.read_bytes())
 
         question = Question(
             session_id=session.id,

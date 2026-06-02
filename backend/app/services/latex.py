@@ -15,13 +15,12 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-# デフォルトの preamble（最低限の日本語対応・数式パッケージ）
+# デフォルトの preamble（日本語対応・数式パッケージ）
 _DEFAULT_PREAMBLE = r"""
 \documentclass[12pt]{article}
 \usepackage{amsmath, amssymb, amsfonts}
 \usepackage{color}
-\usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
+\usepackage{luatexja}
 \usepackage{ulem}          % \sout（取り消し線）
 \pagestyle{empty}
 """.strip()
@@ -84,7 +83,7 @@ def compile_tex(
         tex_file.write_text(full_source, encoding="utf-8")
 
         cmd = [
-            "pdflatex",
+            "lualatex",
             "-interaction=nonstopmode",
             "-halt-on-error",
             "-output-directory",
@@ -92,7 +91,7 @@ def compile_tex(
             str(tex_file),
         ]
 
-        # pdflatex を 2 回走らせて相互参照を解決する（念のため）
+        # lualatex を 2 回走らせて相互参照を解決する（念のため）
         for _ in range(2):
             proc = subprocess.run(
                 cmd,
@@ -100,6 +99,7 @@ def compile_tex(
                 text=True,
                 timeout=timeout,
                 cwd=str(tmpdir),
+                errors="replace",  # pdflatex log に非UTF-8文字が含まれる場合がある
             )
 
         if proc.returncode != 0:
